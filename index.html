@@ -128,6 +128,42 @@
                 </div>
             </div>
 
+            <!-- Slider vidéo MP4 simple -->
+            <div class="video-slider-section">
+                <div class="video-slider-container">
+                    <div class="video-slider">
+                        <div class="video-slide active">
+                            <video muted loop class="slider-video">
+                                <source src="images/promo-football-melbet.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        
+                        <div class="video-slide">
+                            <video muted loop class="slider-video">
+                                <source src="images/cotes-paris-football-1xbet.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        
+                        <div class="video-slide">
+                            <video muted loop class="slider-video">
+                                <source src="images/monteiro.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        
+                        <div class="video-controls">
+                            <button class="video-prev"><i class='bx bx-chevron-left'></i></button>
+                            <button class="video-next"><i class='bx bx-chevron-right'></i></button>
+                        </div>
+                        
+                        <div class="video-indicators">
+                            <span class="indicator active" data-slide="0"></span>
+                            <span class="indicator" data-slide="1"></span>
+                            <span class="indicator" data-slide="2"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Nouvelle section pour les téléchargements d'applications -->
             <div class="container">
                 <div class="download-apps">
@@ -528,6 +564,87 @@ hasSubmenuItems.forEach(item => {
             }
         }
     });
+});
+
+// Slider vidéo simple
+document.addEventListener('DOMContentLoaded', function() {
+    const videoSlides = document.querySelectorAll('.video-slide');
+    const indicators = document.querySelectorAll('.indicator');
+    const prevBtn = document.querySelector('.video-prev');
+    const nextBtn = document.querySelector('.video-next');
+    let currentSlide = 0;
+    let slideInterval;
+
+    // Fonction pour passer à une slide spécifique
+    function goToSlide(n) {
+        videoSlides[currentSlide].classList.remove('active');
+        indicators[currentSlide].classList.remove('active');
+        
+        currentSlide = (n + videoSlides.length) % videoSlides.length;
+        
+        videoSlides[currentSlide].classList.add('active');
+        indicators[currentSlide].classList.add('active');
+        
+        // Jouer seulement la vidéo active
+        videoSlides.forEach((slide, index) => {
+            const video = slide.querySelector('video');
+            if (index === currentSlide) {
+                video.play().catch(e => console.log("Autoplay prevented: ", e));
+            } else {
+                video.pause();
+                video.currentTime = 0;
+            }
+        });
+    }
+
+    // Slide suivant
+    function nextSlide() {
+        goToSlide(currentSlide + 1);
+    }
+
+    // Démarrer le slider automatique
+    function startSlider() {
+        slideInterval = setInterval(nextSlide, 5000); // Change toutes les 5 secondes
+    }
+
+    // Événements pour les boutons de contrôle
+    nextBtn.addEventListener('click', function() {
+        clearInterval(slideInterval);
+        nextSlide();
+        startSlider();
+    });
+
+    prevBtn.addEventListener('click', function() {
+        clearInterval(slideInterval);
+        goToSlide(currentSlide - 1);
+        startSlider();
+    });
+
+    // Événements pour les indicateurs
+    indicators.forEach(indicator => {
+        indicator.addEventListener('click', function() {
+            clearInterval(slideInterval);
+            const slideIndex = parseInt(this.getAttribute('data-slide'));
+            goToSlide(slideIndex);
+            startSlider();
+        });
+    });
+
+    // Pause le slider quand la souris est sur le conteneur
+    const videoSlider = document.querySelector('.video-slider');
+    videoSlider.addEventListener('mouseenter', function() {
+        clearInterval(slideInterval);
+    });
+    videoSlider.addEventListener('mouseleave', startSlider);
+
+    // Initialisation
+    startSlider();
+    
+    // Jouer la première vidéo
+    if (videoSlides[0]) {
+        const firstVideo = videoSlides[0].querySelector('video');
+        firstVideo.play().catch(e => console.log("Autoplay prevented: ", e));
+    }
 });
 
     </script>
